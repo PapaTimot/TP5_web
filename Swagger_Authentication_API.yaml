@@ -1,0 +1,330 @@
+openapi: 3.0.0
+info:
+  version: '1.0.0-oas3'
+  title: OpenAPI Authentication API
+  description: Authentication API to provide server access.
+
+paths:
+  /v1/auth/login:
+    post:
+      tags:
+        - User Login
+      summary: Login API
+      description: >-
+        The login API put credentials and get JWT access token if access is
+        granted
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+        description: The user login and password
+        required: true
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jwt'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/auth/verifyaccess:
+    get:
+      tags:
+        - Check access
+      summary: Check if access is granted or not to the user.
+      description: >-
+        The verifyaccess API should return OK if access is granted to the user,
+        UNAUTHORIZED otherwise. The access_token should be present in the header of the request (Authorization : bearer access_token)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/users:
+    get:
+      tags:
+        - Get the users list
+      summary: Get all the users (but without password property !)
+      description: >-
+        The access_token should be present in the header of the request (Authorization : bearer access_token).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Add a new user
+      summary: Create a new user
+      description: >-
+        The new user is created, on the server. The password should not be stored on the server, just the hash should be store ! The access_token should be present in the header of the request (Authorization : bearer access_token).
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserToCreate'
+        description: The name, the login and the user password
+        required: true
+
+  /v1/users/{userId}:
+    get:
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: ID of the user to get
+      tags:
+        - Get a user
+      summary: Get a user (but without password property !)
+      description: >-
+        Get user's properties (name, login, age)! The access_token should be present in the header of the request (Authorization : bearer access_token).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: ID of the user to get
+      tags:
+        - Update a user
+      summary: Update a user
+      description: >-
+        Update user properties (name, password)! The access_token should be present in the header of the request (Authorization : bearer access_token).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserToUpdate'
+        description: The id, the name, the login and the user password
+        required: true
+
+    delete:
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: ID of the user to get
+      tags:
+        - Delete a user
+      summary: Delete a user
+      description: >-
+        Delete the user identified by it's userId! The access_token should be present in the header of the request (Authorization : bearer access_token).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+servers:
+  - url: 'http://localhost:3000'
+  - url: 'https://localhost'
+
+components:
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: 'http'
+      scheme: 'bearer'
+      key: 'Authorization'
+      bearerFormat: 'JWT' # optional, arbitrary value for documentation purposes
+  schemas:
+    Credentials:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+        paswword:
+          type: string
+    UserToCreate:
+      type: object
+      required:
+        - name
+        - login
+        - age
+        - password
+      properties:
+        name:
+          type: string
+        login:
+          type: string
+        age:
+          type: number
+        paswword:
+          type: string
+    UserToUpdate:
+      type: object
+      required:
+        - name
+        - login
+        - age
+        - password
+      properties:
+        name:
+          type: string
+        login:
+          type: string
+        age:
+          type: number
+        paswword:
+          type: string
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - login
+        - age
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        login:
+          type: string
+        age:
+          type: number
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+      example:
+        - id: '4ea5a-4a5a6a-d8d8d'
+          name: Sherlock
+          login: sh
+          age: 44
+        - id: 'ae45a-78456a-d8654'
+          name: John
+          login: jw
+          age: 52
+    Jwt:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: aaaaaaaaa.bbbbbbbbbb.cccccccc
+        expirity:
+          type: string
+          description: ISO date
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+        type:
+          type: string
+        message:
+          type: string
+    Message:
+      type: object
+      properties:
+        message:
+          type: string

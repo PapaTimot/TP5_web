@@ -1,0 +1,36 @@
+{
+  "name": "esir-tp5",
+  "version": "1.0.0",
+  "description": "Module d'authentification",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "mocha --timeout 10000 --exit",
+    "test-watch": "mocha --watch",
+    "test-coverage": "nyc --reporter=lcov  npm test",
+    "test-report": "npm run test-coverage && nyc report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stfanmichel/ESIR-TP5.git"
+  },
+  "author": "Stéphane Michel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stfanmichel/ESIR-TP5/issues"
+  },
+  "homepage": "https://github.com/stfanmichel/ESIR-TP5#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.1",
+    "mocha": "^5.2.0",
+    "nyc": "^13.3.0"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "helmet": "^3.15.1",
+    "jsonwebtoken": "^8.4.0",
+    "tcomb": "^3.2.29",
+    "uuid": "^3.3.2"
+  }
+}
