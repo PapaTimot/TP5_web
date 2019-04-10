@@ -27,6 +27,7 @@
     "nyc": "^13.3.0"
   },
   "dependencies": {
+    "bcrypt": "^3.0.5",
     "express": "^4.16.4",
     "helmet": "^3.15.1",
     "jsonwebtoken": "^8.4.0",

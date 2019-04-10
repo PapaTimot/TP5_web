@@ -7,6 +7,7 @@ chai.use(chaiHttp)
 
 token = ''
 
+// A serie of test lauch with a VALID token
 describe('AUTHORIZED users tests', () => {
 
   it('should try to get a JWT access token for an AUTHORIZED user on /v1/auth/login POST', done => {
@@ -18,7 +19,7 @@ describe('AUTHORIZED users tests', () => {
         "password": "tequila"
       })
       .end((err, res) => {
-        token = res.body['access_token']
+        token = res.body.access_token
         res
           .should
           .have
@@ -336,6 +337,7 @@ describe('AUTHORIZED users tests', () => {
   })
 })
 
+// A serie of test lauch with an INVALID token
 describe('UNAUTHORIZED users tests', () => {
 
   it('should try to get a JWT access token for an UNAUTHORIZED user on /v1/auth/login POST', done => {
@@ -363,7 +365,6 @@ describe('UNAUTHORIZED users tests', () => {
           .have
           .property('code')
           .equal(0)
-          
         res
           .body
           .should
