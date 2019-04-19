@@ -65,17 +65,25 @@ const getAll = () => {
 }
 
 const add = (user) => { 
-    user.password = bcrypt.hashSync(user.password, saltRounds)
-    const newUser = {
-        ...user,
-        id: uuidv1()
-    }
-    if (validateUser(newUser)) {
-        users.push(newUser)
-    } else {
-        throw new Error('user.not.valid')
-    }
-    return newUser
+    return new Promise((resolve, reject) => {
+        bcrypt.hash(user.password, saltRounds)
+        .then((hash) => {
+            user.password = hash
+            const newUser = {
+                ...user,
+                id: uuidv1()
+            }
+            if (validateUser(newUser)) {
+                users.push(newUser)
+                resolve(newUser)
+            } else {
+                reject('user.not.valid')
+            }
+        })
+        .catch((error) => {
+            reject(error)
+        })
+    })
 }
 
 const update = (id, newUserProperties) => {
@@ -113,21 +121,21 @@ const remove = (id) => {
 }
 
 const verifyUser = (login, password) => {
-    const usersFound = users.filter((user) => user.login === login)
-    let result = false
-
-    if (usersFound.length >= 1 && bcrypt.compareSync(password, usersFound[0].password)){
-        result = true
-    }
-
-    // await bcrypt.compare(password, user.passwordHash);
-    // bcrypt.compare(password, user.password).then(function(res) {
-    //     if (res){
-    //         result = true
-    //     }
-    // });
-
-    return result
+    return new Promise((resolve, reject) => {
+        const usersFound = users.filter((user) => user.login === login)
+        if (usersFound.length >= 1){
+            bcrypt.compare(password, usersFound[0].password)
+            .then((res) => {
+                res ? resolve() : reject()
+            })
+            .catch(() => {
+                reject()
+            })
+        }
+        else {
+            reject()
+        }
+    })
 }
 
 function validateUser(user) {

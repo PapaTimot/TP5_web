@@ -49,17 +49,18 @@ router.post('/', function (req, res, next) {
 
   /* istanbul ignore else */
   if (newUser) {
-    try {
-      const user = usersModel.add(newUser)
+    usersModel.add(newUser)
+    .then((user) => {
       req
-        .res
-        .status(201)
-        .send(user)
-    } catch (exc) {
+      .res
+      .status(201)
+      .send(user)
+    })
+    .catch((exc) => {
       res
         .status(400)
         .json({message: exc.message})
-    }
+    })
   } else {
     res
       .status(400)
@@ -81,6 +82,7 @@ router.patch('/:id', function (req, res, next) {
         .json(updated)
 
     } catch (exc) {
+
       if (exc.message === 'user.not.found') {
         res
           .status(404)

@@ -340,13 +340,91 @@ describe('AUTHORIZED users tests', () => {
 // A serie of test lauch with an INVALID token
 describe('UNAUTHORIZED users tests', () => {
 
-  it('should try to get a JWT access token for an UNAUTHORIZED user on /v1/auth/login POST', done => {
+  it('should try to get a JWT access token for an UNAUTHORIZED user (wrong password) on /v1/auth/login POST', done => {
     chai
       .request(app)
       .post('/v1/auth/login/')
       .send({
-        "login": "pedro",
-        "password": "mojito"
+        "login": "sid",
+        "password": "diabolo"
+      })
+      .end((err, res) => {
+        res
+          .should
+          .have
+          .status(401)
+        res.should.be.json
+        res
+          .body
+          .should
+          .be
+          .a('object')
+        res
+          .body
+          .should
+          .have
+          .property('code')
+          .equal(0)
+        res
+          .body
+          .should
+          .have
+          .property('type')
+        res
+          .body
+          .should
+          .have
+          .property('message')
+        done()
+      })
+  })
+
+  it('should try to get a JWT access token for an UNAUTHORIZED user (no password) on /v1/auth/login POST', done => {
+    chai
+      .request(app)
+      .post('/v1/auth/login/')
+      .send({
+        "login": "sid",
+        "password": undefined
+      })
+      .end((err, res) => {
+        res
+          .should
+          .have
+          .status(401)
+        res.should.be.json
+        res
+          .body
+          .should
+          .be
+          .a('object')
+        res
+          .body
+          .should
+          .have
+          .property('code')
+          .equal(0)
+        res
+          .body
+          .should
+          .have
+          .property('type')
+        res
+          .body
+          .should
+          .have
+          .property('message')
+        done()
+      })
+  })
+
+  it('should try to get a JWT access token for an UNAUTHORIZED user (wrong login) on /v1/auth/login POST', done => {
+    chai
+      .request(app)
+      .post('/v1/auth/login/')
+      .send({
+        "login": "sam",
+        "password": "punch"
       })
       .end((err, res) => {
         res

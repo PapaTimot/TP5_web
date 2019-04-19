@@ -14,42 +14,41 @@ router.use((req, res, next) => {
   next()
 })
 
-
-
 /* GET a message to check if the access token in the header is VALID. */
 router.get('/verifyaccess', function (req, res, next) {
   const token = req.headers.authorization.split(" ")[1]
-  if (idpModel.checkJWT(token)){
+  idpModel.checkJWT(token)
+  .then(() => {
     res
       .status(200)
       .json({message : "valid access token"})
-  }
-  else {
+  })
+  .catch(() => {
     res
     .status(401)
     .json({ code    : 0,
             type    : "authorization",
             message : "unvalid access token"})
-  }
+  })
 })
 // curl -H "authorization: bearer '$token' " 
 // http://localhost:3000/v1/auth/verifyaccess
 
 /* POST : try to get an access_token with a login and password  */
 router.post('/login', function (req, res, next) {
-  const token = idpModel.getJWT(req.body)
-  if (!token) {
+  idpModel.getJWT(req.body)
+  .then((token) => {
+    res
+    .status(200)
+    .json({access_token : token, expirity : idpModel.getExpirity()})
+  })
+  .catch(() => {
     res
     .status(401)
     .json({ code    : 0,
             type    : "authorization",
             message : "unauthorize user"})
-  } 
-  else {
-    res
-    .status(200)
-    .json({access_token : token, expirity : idpModel.getExpirity()})
-  }
+  }) 
 })
 // curl -d '{"login": "pedro", "password": "tequila"}' 
 //      -H "Content-Type: application/json" 

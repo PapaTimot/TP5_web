@@ -19,25 +19,31 @@ const verifyOptions = {
 };
 
 idpModel.getJWT = (user) => {
-    let result
-    if (usersModel.verifyUser(user.login, user.password)){
-        const payload = {name : user.name, login : user.login};
-        result = jwt.sign(payload, privateKEY, signOptions);
-    }
-    else {
-        result = false
-    }
-    return result
+    return new Promise((resolve, reject) => {
+        usersModel.verifyUser(user.login, user.password)
+        .then(() => {
+            const payload = {name : user.name, login : user.login};
+            jwt.sign(payload, privateKEY, signOptions, (err, token) => {
+                resolve(token)
+            })
+        })
+        .catch(() => {
+            reject()
+        })
+    })
 }
 
 idpModel.checkJWT = (token) => {
-    let result = true
-    try {
-        jwt.verify(token, publicKEY, verifyOptions)
-    } catch (error) {
-        result = false
-    }
-    return result
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, publicKEY, verifyOptions, (err) => {
+            if (err) {
+                reject()
+            }
+            else {
+                resolve()
+            }
+        })
+    })
 }
 
 idpModel.getExpirity = () => {
