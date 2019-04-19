@@ -14,9 +14,9 @@ app.use(bodyParser.json())
 // Activation de Helmet
 app.use(helmet({noSniff: true}))
 
-// On injecte les models dans les routers
+// On injecte les modèles dans les routers
 app.use('/v1/users', usersRouter(usersModel))
-app.use('/v1/auth', authRouter(idpModel))
+app.use('/v1/auth', authRouter(idpModel(usersModel)))
 
 // For unit tests
 exports.app = app

@@ -81,7 +81,6 @@ router.patch('/:id', function (req, res, next) {
         .json(updated)
 
     } catch (exc) {
-
       if (exc.message === 'user.not.found') {
         res
           .status(404)

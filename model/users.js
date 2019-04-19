@@ -54,9 +54,12 @@ const get = (id) => {
 }
 
 const getAll = () => {
-    const result = users.slice()
-    result.forEach(user => {
-        delete user.password
+    const result = []
+    let tmp = null
+    users.forEach(user => {
+        tmp = Object.assign({}, user)
+        delete tmp.password
+        result.push(tmp)
     });
     return result
 }
@@ -89,7 +92,7 @@ const update = (id, newUserProperties) => {
         // Control data to patch
         if (validateUser(newUser)) {
             // Object.assign permet d'éviter la suppression de l'ancien élément puis l'ajout
-            // du nouveau Il assigne à l'ancien objet toutes les propriétés du nouveau
+            // du nouveau, il assigne à l'ancien objet toutes les propriétés du nouveau
             Object.assign(oldUser, newUser)
             return oldUser
         } else {

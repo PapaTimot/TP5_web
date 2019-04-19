@@ -1,6 +1,8 @@
 const fs   = require('fs');
 const jwt  = require('jsonwebtoken');
-const usersModel = require('./users')
+
+let usersModel = undefined
+const idpModel = {}
 
 const privateKEY  = fs.readFileSync('./keys/private.key', 'utf8');
 const publicKEY  = fs.readFileSync('./keys/public.key', 'utf8');
@@ -14,9 +16,9 @@ const signOptions = {
 const verifyOptions = {
     expiresIn:  expirity,
     algorithm:  ["RS256"]
-   };
+};
 
-const getJWT = (user) => {
+idpModel.getJWT = (user) => {
     let result
     if (usersModel.verifyUser(user.login, user.password)){
         const payload = {name : user.name, login : user.login};
@@ -28,21 +30,22 @@ const getJWT = (user) => {
     return result
 }
 
-const checkJWT = (token) => {
+idpModel.checkJWT = (token) => {
     let result = true
     try {
         jwt.verify(token, publicKEY, verifyOptions)
     } catch (error) {
         result = false
     }
-
     return result
 }
 
-const getExpirity = () => {
+idpModel.getExpirity = () => {
     return expirity
 }
 
-exports.getJWT = getJWT
-exports.getExpirity = getExpirity
-exports.checkJWT = checkJWT
+/** return a closure to initialize model */
+module.exports = (model) => {
+    usersModel = model
+    return idpModel
+}

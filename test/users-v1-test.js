@@ -139,7 +139,7 @@ describe('AUTHORIZED users tests', () => {
       .request(app)
       .post('/v1/users')
       .set('Authorization', 'bearer ' + token)
-      .send({name: 'Robert', login: 'pedro', age: 23, password: 'pedrobis'})
+      .send({name: 'Robert', login: 'roro', age: 23, password: 'pedrobis'})
       .end((err, res) => {
         res
           .should
@@ -185,7 +185,7 @@ describe('AUTHORIZED users tests', () => {
           .body
           .login
           .should
-          .equal('pedro')
+          .equal('roro')
         done()
       })
   })
