@@ -41,14 +41,24 @@ const users = [
 ]
 
 const get = (id) => {
+    let result = null
     const usersFound = users.filter((user) => user.id === id)
-    return usersFound.length >= 1
-        ? usersFound[0]
-        : undefined
+    if (usersFound.length >= 1){
+        result = Object.assign({}, usersFound[0])
+        delete result.password
+    }
+    else {
+        result = undefined
+    }
+    return result
 }
 
 const getAll = () => {
-    return users
+    const result = users.slice()
+    result.forEach(user => {
+        delete user.password
+    });
+    return result
 }
 
 const add = (user) => { 
