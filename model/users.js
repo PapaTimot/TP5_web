@@ -51,16 +51,8 @@ const getAll = () => {
     return users
 }
 
-const add = (user) => {
-    
-    bcrypt.hash(user.password, saltRounds, function(err, hash) {
-        if (err) {
-            // throw new Error('password.hash.not.valid')
-        } 
-        else{
-            user.password = hash
-        }
-      });
+const add = (user) => { 
+    user.password = bcrypt.hashSync(user.password, saltRounds)
     const newUser = {
         ...user,
         id: uuidv1()
@@ -111,11 +103,9 @@ const verifyUser = (login, password) => {
     const usersFound = users.filter((user) => user.login === login)
     let result = false
 
-    usersFound.forEach(user => {
-        if (bcrypt.compareSync(password, user.password)){
-            result = true
-        }
-    });
+    if (usersFound.length >= 1 && bcrypt.compareSync(password, usersFound[0].password)){
+        result = true
+    }
 
     // await bcrypt.compare(password, user.passwordHash);
     // bcrypt.compare(password, user.password).then(function(res) {

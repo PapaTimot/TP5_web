@@ -29,12 +29,13 @@ const getJWT = (user) => {
 }
 
 const checkJWT = (token) => {
-    let result = false
+    let result = true
     try {
-        if (jwt.verify(token, publicKEY, verifyOptions))
-            result = true
-    } catch (error) { 
+        jwt.verify(token, publicKEY, verifyOptions)
+    } catch (error) {
+        result = false
     }
+
     return result
 }
 
