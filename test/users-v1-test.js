@@ -338,531 +338,531 @@ describe('AUTHORIZED users tests', () => {
 })
 
 // A serie of test lauch with an INVALID token
-describe('UNAUTHORIZED users tests', () => {
+// describe('UNAUTHORIZED users tests', () => {
 
-  it('should try to get a JWT access token for an UNAUTHORIZED user on /v1/auth/login POST', done => {
-    chai
-      .request(app)
-      .post('/v1/auth/login/')
-      .send({
-        "login": "pedro",
-        "password": "mojito"
-      })
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//   it('should try to get a JWT access token for an UNAUTHORIZED user on /v1/auth/login POST', done => {
+//     chai
+//       .request(app)
+//       .post('/v1/auth/login/')
+//       .send({
+//         "login": "pedro",
+//         "password": "mojito"
+//       })
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
   
-  it('should test an INVALID JWT access token user on /v1/auth/verifyaccess GET', done => {
-    chai
-      .request(app)
-      .get('/v1/auth/verifyaccess/')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should test an INVALID JWT access token user on /v1/auth/verifyaccess GET', done => {
+//     chai
+//       .request(app)
+//       .get('/v1/auth/verifyaccess/')
+//       .set('Authorization', 'bearer ' + '...')
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-    })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//     })
+//   })
 
-  it('should list ALL users on /v1/users GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should list ALL users on /v1/users GET', done => {
+//     chai
+//       .request(app)
+//       .get('/v1/users')
+//       .set('Authorization', 'bearer ' + '...')
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should list a SINGLE user on /v1/users/<id> GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should list a SINGLE user on /v1/users/<id> GET', done => {
+//     chai
+//       .request(app)
+//       .get('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+//       .set('Authorization', 'bearer ' + '...')
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should list an UNKNOW user on /v1/users/<id> GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users/45745c60-unknow-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should list an UNKNOW user on /v1/users/<id> GET', done => {
+//     chai
+//       .request(app)
+//       .get('/v1/users/45745c60-unknow-2d42b21b1a3e')
+//       .set('Authorization', 'bearer ' + '...')
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should add a SINGLE user on /v1/users POST', done => {
-    chai
-      .request(app)
-      .post('/v1/users')
-      .set('Authorization', 'bearer ' + '...')
-      .send({name: 'Robert', login: 'roro', age: 23, password: 'dico'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should add a SINGLE user on /v1/users POST', done => {
+//     chai
+//       .request(app)
+//       .post('/v1/users')
+//       .set('Authorization', 'bearer ' + '...')
+//       .send({name: 'Robert', login: 'roro', age: 23, password: 'dico'})
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should add a INVALID user on /v1/users POST', done => {
-    chai
-      .request(app)
-      .post('/v1/users')
-      .set('Authorization', 'bearer ' + '...')
-      .send({name: 'Robert', login: 'roro', age: 23, wrongparam: 'value'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should add a INVALID user on /v1/users POST', done => {
+//     chai
+//       .request(app)
+//       .post('/v1/users')
+//       .set('Authorization', 'bearer ' + '...')
+//       .send({name: 'Robert', login: 'roro', age: 23, wrongparam: 'value'})
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should add an EMPTY user on /v1/users POST', done => {
-    chai
-      .request(app)
-      .post('/v1/users')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should add an EMPTY user on /v1/users POST', done => {
+//     chai
+//       .request(app)
+//       .post('/v1/users')
+//       .set('Authorization', 'bearer ' + '...')
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should update a SINGLE user on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .send({name: 'Robertinio'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should update a SINGLE user on /v1/users/<id> PATCH', done => {
+//     chai
+//       .request(app)
+//       .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+//       .set('Authorization', 'bearer ' + '...')
+//       .send({name: 'Robertinio'})
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should update a user with wrong parameters on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .send({wrongparam1: 'Robertinio'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should update a user with wrong parameters on /v1/users/<id> PATCH', done => {
+//     chai
+//       .request(app)
+//       .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+//       .set('Authorization', 'bearer ' + '...')
+//       .send({wrongparam1: 'Robertinio'})
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should update a UNKNOW user on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-unknow-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .send({name: 'Robertinio'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should update a UNKNOW user on /v1/users/<id> PATCH', done => {
+//     chai
+//       .request(app)
+//       .patch('/v1/users/45745c60-unknow-2d42b21b1a3e')
+//       .set('Authorization', 'bearer ' + '...')
+//       .send({name: 'Robertinio'})
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should delete a SINGLE user on /v1/users/<id> DELETE', done => {
-    chai
-      .request(app)
-      .delete('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should delete a SINGLE user on /v1/users/<id> DELETE', done => {
+//     chai
+//       .request(app)
+//       .delete('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+//       .set('Authorization', 'bearer ' + '...')
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should delete a UNKNOWN user on /v1/users/<id> DELETE', done => {
-    chai
-      .request(app)
-      .delete('/v1/users/45745c60-unknown-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should delete a UNKNOWN user on /v1/users/<id> DELETE', done => {
+//     chai
+//       .request(app)
+//       .delete('/v1/users/45745c60-unknown-2d42b21b1a3e')
+//       .set('Authorization', 'bearer ' + '...')
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
 
-  it('should delete a NULL ID user on /v1/users/<id> DELETE', done => {
-    chai
-      .request(app)
-      .delete('/v1/users/')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
+//   it('should delete a NULL ID user on /v1/users/<id> DELETE', done => {
+//     chai
+//       .request(app)
+//       .delete('/v1/users/')
+//       .set('Authorization', 'bearer ' + '...')
+//       .end((err, res) => {
+//         res
+//           .should
+//           .have
+//           .status(401)
+//         res.should.be.json
+//         res
+//           .body
+//           .should
+//           .be
+//           .a('object')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('code')
+//           .equal(0)
           
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-})
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('type')
+//         res
+//           .body
+//           .should
+//           .have
+//           .property('message')
+//         done()
+//       })
+//   })
+// })
 

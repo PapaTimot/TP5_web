@@ -18,25 +18,25 @@ const users = [
         name: 'Pedro Ramirez',
         login: 'pedro',
         age: 44,
-        password: 'tequila'
+        password: bcrypt.hashSync('tequila', saltRounds)
     }, {
         id: '456897d-98a8-78d8-4565-2d42b21b1a3e',
         name: 'Jesse Jones',
         login: 'jesse',
         age: 48,
-        password: 'mojito'
+        password: bcrypt.hashSync('mojito', saltRounds)
     }, {
         id: '987sd88a-45q6-78d8-4565-2d42b21b1a3e',
         name: 'Rose Doolan',
         login: 'rose',
         age: 36,
-        password: 'diabolo'
+        password: bcrypt.hashSync('diabolo', saltRounds)
     }, {
         id: '654de540-877a-65e5-4565-2d42b21b1a3e',
         name: 'Sid Ketchum',
         login: 'sid',
         age: 56,
-        password: 'limonccelo'
+        password: bcrypt.hashSync('limonccelo', saltRounds)
     }
 ]
 
@@ -107,6 +107,26 @@ const remove = (id) => {
     }
 }
 
+const verifyUser = (login, password) => {
+    const usersFound = users.filter((user) => user.login === login)
+    let result = false
+
+    usersFound.forEach(user => {
+        if (bcrypt.compareSync(password, user.password)){
+            result = true
+        }
+    });
+
+    // await bcrypt.compare(password, user.passwordHash);
+    // bcrypt.compare(password, user.password).then(function(res) {
+    //     if (res){
+    //         result = true
+    //     }
+    // });
+
+    return result
+}
+
 function validateUser(user) {
     let result = false
     /* istanbul ignore else */
@@ -126,3 +146,4 @@ exports.getAll = getAll
 exports.add = add
 exports.update = update
 exports.remove = remove
+exports.verifyUser = verifyUser
