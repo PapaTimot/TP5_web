@@ -51,8 +51,7 @@ router.post('/', function (req, res, next) {
   if (newUser) {
     usersModel.add(newUser)
     .then((user) => {
-      req
-      .res
+    res
       .status(201)
       .send(user)
     })

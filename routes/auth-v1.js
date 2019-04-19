@@ -14,25 +14,6 @@ router.use((req, res, next) => {
   next()
 })
 
-/* GET a message to check if the access token in the header is VALID. */
-router.get('/verifyaccess', function (req, res, next) {
-  const token = req.headers.authorization.split(" ")[1]
-  idpModel.checkJWT(token)
-  .then(() => {
-    res
-      .status(200)
-      .json({message : "valid access token"})
-  })
-  .catch(() => {
-    res
-    .status(401)
-    .json({ code    : 0,
-            type    : "authorization",
-            message : "unvalid access token"})
-  })
-})
-// curl -H "authorization: bearer '$token' " 
-// http://localhost:3000/v1/auth/verifyaccess
 
 /* POST : try to get an access_token with a login and password  */
 router.post('/login', function (req, res, next) {
@@ -53,6 +34,40 @@ router.post('/login', function (req, res, next) {
 // curl -d '{"login": "pedro", "password": "tequila"}' 
 //      -H "Content-Type: application/json" 
 //      -X POST http://localhost:3000/v1/auth/login
+
+
+
+/* GET a message to check if the access token in the header is VALID. */
+router.get('/verifyaccess', function (req, res, next) {
+  let token = null
+  try {
+    token = req.headers.authorization.split(" ")[1]
+  } 
+  catch (error) {
+    res
+    .status(401)
+    .json({ code    : 0,
+            type    : "authorization",
+            message : "no access token"})
+  }
+  if (token){
+    idpModel.checkJWT(token)
+    .then(() => {
+      res
+        .status(200)
+        .json({message : "valid access token"})
+    })
+    .catch(() => {
+      res
+      .status(401)
+      .json({ code    : 0,
+              type    : "authorization",
+              message : "unvalid access token"})
+    })
+  }
+})
+// curl -H "authorization: bearer '$token' " 
+// http://localhost:3000/v1/auth/verifyaccess
 
 
 /** return a closure to initialize model */
