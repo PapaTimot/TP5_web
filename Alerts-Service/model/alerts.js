@@ -1,123 +1,139 @@
 const uuidv1 = require('uuid/v1')
 const tcomb = require('tcomb')
 
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const mongoose = require('mongoose')
 
-const alert = tcomb.struct({
+const Category = tcomb.enums({
+    weather: 'weather',
+    sea: 'sea',
+    transport: 'transport'
+})
+
+const Status = tcomb.enums({
+    warning: 'warning',
+    threat: 'threat',
+    danger: 'danger',
+    risk: 'risk'
+})
+
+const ALERT = tcomb.struct({
     id: tcomb.String,
-    name: tcomb.String,
-    login: tcomb.String,
-    age: tcomb.Number,
-    password: tcomb.String
+    type: Category,
+    label: tcomb.String,
+    status: Status,
+    from: tcomb.String,
+    to: tcomb.string
 }, {strict: true})
 
-const alerts = [
+const alertSchema = new mongoose.Schema({
+    type: {
+        type: Category,
+        required: true
+    },
+    label: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: Status,
+        required: true
+    },
+    from: {
+        type: String,
+        required: true
+    },
+    to: {
+        type: String,
+        required: true
+    }
+})
+
+const AlertModel = mongoose.model('Alert', alertSchema)
+
+/*const alerts = [
     {
         id: '45745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
-        name: 'Pedro Ramirez',
-        login: 'pedro',
-        age: 44,
-        password: bcrypt.hashSync('tequila', saltRounds)
-    }, {
-        id: '456897d-98a8-78d8-4565-2d42b21b1a3e',
-        name: 'Jesse Jones',
-        login: 'jesse',
-        age: 48,
-        password: bcrypt.hashSync('mojito', saltRounds)
-    }, {
-        id: '987sd88a-45q6-78d8-4565-2d42b21b1a3e',
-        name: 'Rose Doolan',
-        login: 'rose',
-        age: 36,
-        password: bcrypt.hashSync('diabolo', saltRounds)
-    }, {
-        id: '654de540-877a-65e5-4565-2d42b21b1a3e',
-        name: 'Sid Ketchum',
-        login: 'sid',
-        age: 56,
-        password: bcrypt.hashSync('limonccelo', saltRounds)
+        type: Category.transport,
+        label: 'My alert for',
+        status: Status.risk,
+        from: 'string',
+        to: 'string'
     }
-]
+]*/
 
-const get = (id) => {
-    let result = null
-    const alertsFound = alerts.filter((alert) => alert.id === id)
-    if (alertsFound.length >= 1){
-        result = Object.assign({}, alertsFound[0])
-        delete result.password
+const get = async (id) => {
+    const alertFound = undefined
+    try {
+        alertFound = await AlertModel.findById(id)
+    } catch (exc) {
+        console.log(exc)
     }
-    else {
-        result = undefined
-    }
-    return result
+    return alertFound
 }
 
-const ggetFiltered = () => {
-    const result = []
-    let tmp = null
-    alerts.forEach(alert => {
-        tmp = Object.assign({}, alert)
-        delete tmp.password
-        result.push(tmp)
-    });
-    return result
+const getFiltered = async (statusSearched) => {    
+    const alertsFound = []
+    try {
+        alertsFound = await AlertModel.find({status: {$in: statusSearched}})
+    } catch(exc) {
+        console.log(exc)
+    }
+    return alertsFound
 }
 
-const add = (alert) => { 
-    return new Promise((resolve, reject) => {
-        bcrypt.hash(alert.password, saltRounds)
-        .then((hash) => {
-            alert.password = hash
-            const newalert = {
-                ...alert,
-                id: uuidv1()
-            }
-            if (validatealert(newalert)) {
-                alerts.push(newalert)
-                resolve(newalert)
-            } else {
-                reject('alert.not.valid')
-            }
-        })
-        .catch((error) => {
-            reject(error)
-        })
+const add = async (alert) => {
+    alert = {
+        ...alert,
+        id: uuidv1()
+    } 
+    const newAlert = new AlertModel({
+        ...alert
     })
-}
-
-const update = (id, newalertProperties) => {
-    const alertsFound = alerts.filter((alert) => alert.id === id)
-
-    if (alertsFound.length === 1) {
-        const oldalert = alertsFound[0]
-
-        const newalert = {
-            ...oldalert,
-            ...newalertProperties
-        }
-
-        // Control data to patch
-        if (validatealert(newalert)) {
-            // Object.assign permet d'éviter la suppression de l'ancien élément puis l'ajout
-            // du nouveau, il assigne à l'ancien objet toutes les propriétés du nouveau
-            Object.assign(oldalert, newalert)
-            return oldalert
-        } else {
-            throw new Error('alert.not.valid')
+    if (validateAlert(alert)) {
+        try {
+            await newAlert.save()
+        } catch(exc) {
+            throw new Error(exc)
         }
     } else {
-        throw new Error('alert.not.found')
+        throw new Error('alert.not.valid');
+        
     }
 }
 
-const remove = (id) => {
-    const indexFound = alerts.findIndex((alert) => alert.id === id)
-    if (indexFound > -1) {
-        alerts.splice(indexFound, 1)
-    } else {
-        throw new Error('alert.not.found')
+const update = async (id, newAlertProperties) => {
+    const alertFound = undefined
+    try {
+        alertFound = await AlertModel.findByIdAndUpdate(id, newAlertProperties)
+    } catch (exc) {
+        throw new Error(exc)
     }
+    if (validateAlert(alertFound)) {
+        return alertFound
+    } else {
+        throw new Error('alert.not.valid')
+    }
+}
+
+const remove = async (id) => {
+    try {
+        await AlertModel.findByIdAndRemove(id)
+    } catch(exc) {
+        throw new Error(`Can't remove alert with id=${id}`)
+    }
+}
+
+const validateAlert = (alert) => {
+    let result = false
+    if (alert) {
+        try {
+            const tcombAlert = ALERT(alert)
+            result = true
+        } catch (exc) {
+            result = false
+        }
+    }
+    return result
 }
 
 exports.get = get
