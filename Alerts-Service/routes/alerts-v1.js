@@ -3,7 +3,7 @@ const router = express.Router()
 
 let alertsModel = undefined
 
-/* Control alertmodel initialisation */
+/* Control alertModel initialisation */
 router.use((req, res, next) => {
   /* istanbul ignore if */
   if (!alertsModel) {
@@ -16,19 +16,24 @@ router.use((req, res, next) => {
 
 /* GET a specific alert by id */
 router.get('/:id', function (req, res, next) {
-  const id = req.params.id
+  const id = req.params.alertId
 
   /* istanbul ignore else */
   if (id) {
     try {
-      const alertFound = alertsModel.get(id)
-      if (alertFound) {
+      alertsModel.get(id)
+      .then((alertFound) => {
         res.json(alertFound)
-      } else {
-        res
-          .status(404)
-          .json({message: `alert not found with id ${id}`})
-      }
+      })
+      .catch((exc) => {
+        if (alertFound) {
+          res.json(alertFound)
+        } else {
+          res
+            .status(404)
+            .json({message: `Alert not found with id ${id}`})
+        }
+      })
     } catch (exc) {
       /* istanbul ignore next */
       res
@@ -43,7 +48,7 @@ router.get('/:id', function (req, res, next) {
   }
 })
 
-/* Add a new alert. */
+/* Add a new alert */
 router.post('/', function (req, res, next) {
   const newalert = req.body
 
