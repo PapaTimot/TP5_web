@@ -14,6 +14,37 @@ router.use((req, res, next) => {
   next()
 })
 
+/* GET alerts filtered by their status
+curl http://localhost:3000/v1/alerts/search?status=danger,risk */
+router.get('/search', async function (req, res, next) {
+  let statusFilter = undefined
+  try {
+    statusFilter = req.query.status.split(",")
+  } catch (error) {
+    res
+    .status(400)
+    .json({message: 'Wrong parameter'})
+    return
+  }
+
+  /* istanbul ignore else */
+  if (statusFilter) {
+    try {
+      const alertsFound = await alertsModel.getFiltered(statusFilter)
+      res.json(alertsFound)
+    } catch (error) {
+      res
+      .status(400)
+      .json({message: 'Internal error'})
+    }
+  }
+  else {
+  res
+    .status(400)
+    .json({message: 'Wrong parameter'})
+  }
+})
+
 /* GET a specific alert by id
 curl http://localhost:3000/v1/alerts/5cd03052bfee6a258c439d60 */
 router.get('/:id', async function (req, res, next) {
@@ -23,7 +54,6 @@ router.get('/:id', async function (req, res, next) {
   if (id) {
     try {
       const alertFound = await alertsModel.get(id)
-      console.log(alertFound + "\n" + id);
       res.json(alertFound)
     } catch (error) {
       res
@@ -39,7 +69,7 @@ router.get('/:id', async function (req, res, next) {
 })
 
 /* Add a new alert 
-curl -X POST -H "Content-Type: application/json"  http://localhost:3000/v1/alerts -d '{type:"transport",label:"My alert for",status:"risk",from:"string",to:"string"}'*/
+curl -X POST -H "Content-Type: application/json"  http://localhost:3000/v1/alerts -d '{"type":"transport","label":"My alert for","status":"risk","from":"string","to":"string"}'*/
 router.post('/', async function (req, res, next) {
   const newAlert = req.body
 
@@ -62,21 +92,21 @@ router.post('/', async function (req, res, next) {
   }
 })
 
-/* Update a specific alert */
-router.patch('/:id', function (req, res, next) {
+/* Update a specific alert 
+curl -X PATCH -H "Content-Type: application/json"  http://localhost:3000/v1/alerts/5cd03052bfee6a258c439d60 -d '{"status":"danger"}'*/
+router.patch('/:id', async function (req, res, next) {
   const id = req.params.id
-  const newalertProperties = req.body
+  const newAlertProperties = req.body
 
   /* istanbul ignore else */
-  if (id && newalertProperties) {
+  if (id && newAlertProperties) {
     try {
-      const updated = alertsModel.update(id, newalertProperties)
+      const updated = await alertsModel.update(id, newAlertProperties)
       res
         .status(200)
         .json(updated)
 
     } catch (exc) {
-
       if (exc.message === 'alert.not.found') {
         res
           .status(404)
@@ -94,40 +124,27 @@ router.patch('/:id', function (req, res, next) {
   }
 })
 
-/* REMOVE a specific alert by id */
-router.delete('/:id', function (req, res, next) {
+/* REMOVE a specific alert by id 
+curl -X DELETE http://localhost:3000/v1/alerts/5cd03052bfee6a258c439d60 */
+router.delete('/:id', async function (req, res, next) {
   const id = req.params.id
 
   /* istanbul ignore else */
   if (id) {
     try {
-      alertsModel.remove(id)
-      req
-        .res
-        .status(200)
-        .end()
-    } catch (exc) {
-      /* istanbul ignore else */
-      if (exc.message === 'alert.not.found') {
-        res
-          .status(404)
-          .json({message: `alert not found with id ${id}`})
-      } else {
-        res
-          .status(400)
-          .json({message: exc.message})
-      }
+      await alertsModel.remove(id)
+      res.status(200)
+    } catch (error) {
+      res
+      .status(404)
+      .json({message: `Alert not found with id ${id}`})
     }
-  } else {
-    res
-      .status(400)
-      .json({message: 'Wrong parameter'})
   }
-})
-
-/* GET all alerts */
-router.get('/', function (req, res, next) {
-  res.json(alertsModel.getAll())
+  else {
+  res
+    .status(400)
+    .json({message: 'Invalid ID supplied'})
+  }
 })
 
 /** return a closure to initialize model */

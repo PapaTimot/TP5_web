@@ -72,7 +72,7 @@ const get = async (id) => {
 }
 
 const getFiltered = async (statusSearched) => {    
-    const alertsFound = []
+    let alertsFound = []
     try {
         alertsFound = await AlertModel.find({status: {$in: statusSearched}})
     } catch(exc) {
@@ -102,11 +102,11 @@ const add = async (alert) => {
 }
 
 const update = async (id, newAlertProperties) => {
-    const alertFound = undefined
+    let alertFound = undefined
     try {
-        alertFound = await AlertModel.findByIdAndUpdate(id, newAlertProperties)
+        alertFound = await AlertModel.findByIdAndUpdate(id, newAlertProperties,{new: true})
     } catch (exc) {
-        throw new Error(exc)
+        throw new Error('alert.not.found')
     }
     if (validateAlert(alertFound)) {
         return alertFound

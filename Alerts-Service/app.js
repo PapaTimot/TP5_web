@@ -20,6 +20,7 @@ if(process.env.NODE_ENV !== 'production'){
 	require('dotenv').config() // or mongodb://localhost/mybrary
 }
 
+mongoose.set('useFindAndModify', false);
 mongoose.connect(process.env.DATABASE_URL, {
 	useNewUrlParser: true
 })
