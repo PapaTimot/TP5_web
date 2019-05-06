@@ -3,31 +3,31 @@ const tcomb = require('tcomb')
 
 const mongoose = require('mongoose')
 
-const Category = tcomb.enums({
-    weather: 'weather',
-    sea: 'sea',
-    transport: 'transport'
-})
+// const Category = [
+//     'weather',
+//     'sea',
+//     'transport'
+// ]
 
-const Status = tcomb.enums({
-    warning: 'warning',
-    threat: 'threat',
-    danger: 'danger',
-    risk: 'risk'
-})
+// const Status = [
+//     'warning',
+//     'threat',
+//     'danger',
+//     'risk'
+// ]
 
-const ALERT = tcomb.struct({
-    id: tcomb.String,
-    type: Category,
-    label: tcomb.String,
-    status: Status,
-    from: tcomb.String,
-    to: tcomb.string
-}, {strict: true})
+// const ALERT = tcomb.struct({
+//     id     : tcomb.String,
+//     type   : tcomb.String,
+//     label  : tcomb.String,
+//     status : tcomb.String,
+//     from   : tcomb.String,
+//     to     : tcomb.string
+// }, {strict: true})
 
 const alertSchema = new mongoose.Schema({
     type: {
-        type: Category,
+        type: String,
         required: true
     },
     label: {
@@ -35,7 +35,7 @@ const alertSchema = new mongoose.Schema({
         required: true
     },
     status: {
-        type: Status,
+        type: String,
         required: true
     },
     from: {
@@ -62,7 +62,7 @@ const AlertModel = mongoose.model('Alert', alertSchema)
 ]*/
 
 const get = async (id) => {
-    const alertFound = undefined
+    let alertFound = undefined
     try {
         alertFound = await AlertModel.findById(id)
     } catch (exc) {
@@ -124,16 +124,17 @@ const remove = async (id) => {
 }
 
 const validateAlert = (alert) => {
-    let result = false
-    if (alert) {
-        try {
-            const tcombAlert = ALERT(alert)
-            result = true
-        } catch (exc) {
-            result = false
-        }
-    }
-    return result
+    // let result = false
+    // if (alert) {
+    //     try {
+    //         const tcombAlert = ALERT(alert)
+    //         result = true
+    //     } catch (exc) {
+    //         result = false
+    //     }
+    // }
+    // return result
+    return true
 }
 
 exports.get = get

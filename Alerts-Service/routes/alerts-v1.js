@@ -14,57 +14,47 @@ router.use((req, res, next) => {
   next()
 })
 
-/* GET a specific alert by id */
-router.get('/:id', function (req, res, next) {
-  const id = req.params.alertId
+/* GET a specific alert by id
+curl http://localhost:3000/v1/alerts/5cd03052bfee6a258c439d60 */
+router.get('/:id', async function (req, res, next) {
+  const id = req.params.id
 
   /* istanbul ignore else */
   if (id) {
     try {
-      alertsModel.get(id)
-      .then((alertFound) => {
-        res.json(alertFound)
-      })
-      .catch((exc) => {
-        if (alertFound) {
-          res.json(alertFound)
-        } else {
-          res
-            .status(404)
-            .json({message: `Alert not found with id ${id}`})
-        }
-      })
-    } catch (exc) {
-      /* istanbul ignore next */
+      const alertFound = await alertsModel.get(id)
+      console.log(alertFound + "\n" + id);
+      res.json(alertFound)
+    } catch (error) {
       res
-        .status(400)
-        .json({message: exc.message})
+      .status(404)
+      .json({message: `Alert not found with id ${id}`})
     }
-
-  } else {
-    res
-      .status(400)
-      .json({message: 'Wrong parameter'})
+  }
+  else {
+  res
+    .status(400)
+    .json({message: 'Wrong parameter'})
   }
 })
 
-/* Add a new alert */
-router.post('/', function (req, res, next) {
-  const newalert = req.body
+/* Add a new alert 
+curl -X POST -H "Content-Type: application/json"  http://localhost:3000/v1/alerts -d '{type:"transport",label:"My alert for",status:"risk",from:"string",to:"string"}'*/
+router.post('/', async function (req, res, next) {
+  const newAlert = req.body
 
   /* istanbul ignore else */
-  if (newalert) {
-    alertsModel.add(newalert)
-    .then((alert) => {
-    res
+  if (newAlert) {
+    try {
+      const alert = await alertsModel.add(newAlert)
+      res
       .status(201)
       .send(alert)
-    })
-    .catch((exc) => {
+    } catch (error) {
       res
-        .status(400)
-        .json({message: exc.message})
-    })
+      .status(400)
+      .json({message: error.message})
+    }
   } else {
     res
       .status(400)
