@@ -7,20 +7,167 @@ chai.use(chaiHttp)
 
 token = ''
 
+chai
+	.request(app)
+	.post('/v1/auth/login/')
+	.send({
+		"login": "pedro",
+		"password": "tequila"
+	})
+	.end((err, res) => {
+		token = res.body.access_token
+	})
+
+alertID = ''
+
 // A serie of test lauch with a VALID access token
 describe('AUTHORIZED users tests', () => {
 
-  it('should try to get a JWT access token for an AUTHORIZED user on /v1/auth/login POST', done => {
+	it('should create a new alert', done => {
+		chai
+			.request(app)
+			.post('/v1/alerts/')
+			.set('Authorization', 'bearer ' + token)
+			.send({
+				"type": "weather",
+				"label": "My alert for",
+				"status": "warning",
+				"from": "string",
+				"to": "string"
+			})
+			.end((err, res) => {
+				alertID = res.body._id
+				assert(alertID !== '', 'alertID = ' + alertID)
+				
+				res
+					.should
+					.have
+					.status(200)
+				res.should.be.json
+				res
+					.body
+					.should
+					.be
+					.a('object')
+				res
+					.body
+					.should
+					.have
+					.property('_id')
+				res
+					.body
+					.should
+					.have
+					.property('type')
+				res
+					.body
+					.type
+					.should
+					.equal('weather')
+				res
+					.body
+					.should
+					.have
+					.property('label')
+				res
+					.body
+					.type
+					.should
+					.equal('My alert for')
+				res
+					.body
+					.should
+					.have
+					.property('status')
+				res
+					.body
+					.type
+					.should
+					.equal('warning')
+				res
+					.body
+					.should
+					.have
+					.property('from')
+				res
+					.body
+					.should
+					.have
+					.property('to')
+				done()
+			})
+	})
+
+	it('should not add an alert because of wrong parameter', done => {
     chai
       .request(app)
-      .post('/v1/auth/login/')
+      .post('/v1/alerts')
+      .set('Authorization', 'bearer ' + token)
       .send({
-        "login": "pedro",
-        "password": "tequila"
-      })
+				type: "weather",
+				label: "My alert for",
+				status: "warning",
+				from: "string",
+				to: "string",
+				wrongparam: "value"
+			})
       .end((err, res) => {
-        token = res.body.access_token
         res
+          .should
+          .have
+          .status(405)
+        res.should.be.json
+				done()
+			})
+	})
+
+	it('should get a array of alert', done => {
+		chai
+			.request(app)
+			.get('/v1/alerts/search?status=danger,risk')
+			.set('Authorization', 'bearer ' + token)
+			.end((err, res) => {
+				res
+					.should
+					.have
+					.status(200)
+				res.should.be.json
+				res
+          .body
+          .should
+          .be
+					.a('array')
+				done()
+			})
+	})
+
+	it('should give error because of bad search', done => {
+		chai
+			.request(app)
+			.get('/v1/alerts/search?status=badTag')
+			.set('Authorization', 'bearer ' + token)
+			.end((err, res) => {
+				res
+					.should
+					.have
+					.status(400)
+				res.should.be.json
+				res
+					.body
+					.should
+					.be
+					.a('object')
+				done()
+			})
+	})
+
+	it('should list a single alert corresponding to id', done => {
+		chai
+			.request(app)
+			.get('/v1/alerts/' + alertID)
+			.set('Authorization', 'bearer ' + token)
+			.end((err, res) => {
+				res
           .should
           .have
           .status(200)
@@ -34,201 +181,70 @@ describe('AUTHORIZED users tests', () => {
           .body
           .should
           .have
-          .property('access_token')
-        res
-          .body
-          .should
-          .have
-          .property('expirity')
-        done()
-      })
-  })
-
-  it('should test a VALID JWT access token user on /v1/auth/verifyaccess GET', done => {
-    chai
-      .request(app)
-      .get('/v1/auth/verifyaccess/')
-      .set('Authorization', 'bearer ' + token)
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(200)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should list ALL users on /v1/users GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users')
-      .set('Authorization', 'bearer ' + token)
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(200)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('array')
-        done()
-      })
-  })
-
-  it('should list a SINGLE user on /v1/users/<id> GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + token)
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(200)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('id')
+          .property('_id')
         res
           .body
           .id
           .should
-          .equal('45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+          .equal(alertID)
         done()
-      })
-  })
+			})
+	})
 
-  it('should list an UNKNOW user on /v1/users/<id> GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users/45745c60-unknow-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + token)
-      .end((err, res) => {
-        res
+	it('should return an error because of bad id', done => {
+		chai
+			.request(app)
+			.get('/v1/alerts/invalidID')
+			.set('Authorization', 'bearer ' + token)
+			.end((err, res) => {
+				res
           .should
           .have
-          .status(404)
-        res.should.be.json
-        done()
-      })
-  })
-
-  it('should add a SINGLE user on /v1/users POST', done => {
-    chai
-      .request(app)
-      .post('/v1/users')
-      .set('Authorization', 'bearer ' + token)
-      .send({name: 'Robert', login: 'roro', age: 23, password: 'pedrobis'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(201)
-        res.should.be.json
-        res
+          .status(400)
+				res.should.be.json
+				res
           .body
           .should
           .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('id')
-        res
-          .body
-          .should
-          .have
-          .property('name')
-        res
-          .body
-          .name
-          .should
-          .equal('Robert')
-        res
-          .body
-          .should
-          .have
-          .property('age')
-        res
-          .body
-          .age
-          .should
-          .equal(23)
-        res
-          .body
-          .should
-          .have
-          .property('login')
-        res
-          .body
-          .login
-          .should
-          .equal('roro')
-        done()
-      })
-  })
+					.a('object')
+				done()
+			})
+	})
 
-  it('should add a INVALID user on /v1/users POST', done => {
-    chai
-      .request(app)
-      .post('/v1/users')
-      .set('Authorization', 'bearer ' + token)
-      .send({name: 'Robert', login: 'roro', age: 23, password: 'dico', wrongparam: 'value'})
-      .end((err, res) => {
-        res
+	it('should return an error because no alert was find', done => {
+		chai
+			.request(app)
+			.get('/v1/alerts/5cd03052bfee6a258c439d60')
+			.set('Authorization', 'bearer ' + token)
+			.end((err, res) => {
+				res
           .should
           .have
-          .status(400)
-        res.should.be.json
-        done()
-      })
-  })
-
-  it('should add an EMPTY user on /v1/users POST', done => {
-    chai
-      .request(app)
-      .post('/v1/users')
-      .set('Authorization', 'bearer ' + token)
-      .end((err, res) => {
-        res
+          .status(404)
+				res.should.be.json
+				res
+          .body
           .should
-          .have
-          .status(400)
-        res.should.be.json
-        done()
-      })
-  })
+          .be
+					.a('object')
+				done()
+			})
+	})
 
-  it('should update a SINGLE user on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + token)
-      .send({name: 'Robertinio'})
-      .end((err, res) => {
-        res
+	it('should replace old alert by new one', done => {
+		chai
+			.request(app)
+			.put('/v1/alerts/' + alertID)
+			.set('Authorization', 'bearer ' + token)
+			.send({
+				"type": "weather",
+				"label": "My new alert for",
+				"status": "warning",
+				"from": "string",
+				"to": "string"
+			})
+			.end((err, res) => {
+				res
           .should
           .have
           .status(200)
@@ -242,777 +258,65 @@ describe('AUTHORIZED users tests', () => {
           .body
           .should
           .have
-          .property('id')
+          .property('_id')
         res
           .body
           .id
           .should
-          .equal('45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-        res
-          .body
-          .name
-          .should
-          .equal('Robertinio')
-        res
-          .body
-          .login
-          .should
-          .equal('pedro')
+          .equal(alertID)
         done()
-      })
-  })
+			})
+	})
 
-  it('should update a user with wrong parameters on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + token)
-      .send({wrongparam1: 'Robertinio'})
-      .end((err, res) => {
-        res
+	it('should return an error because of invalid new object', done => {
+		chai
+			.request(app)
+			.put('/v1/alerts/' + alertID)
+			.set('Authorization', 'bearer ' + token)
+			.send({
+				"badParam": "value"
+			})
+			.end((err, res) => {
+				res
           .should
           .have
-          .status(400)
-        res.should.be.json
+          .status(405)
         done()
-      })
-  })
+			})
+	})
 
-  it('should update a UNKNOW user on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-unknow-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + token)
-      .send({name: 'Robertinio'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(404)
-        res.should.be.json
-        done()
-      })
-  })
+	it('should return error because bad id', done => {
+		chai
+			.request(app)
+			.delete('/v1/alerts/invalidID')
+			.set('Authorization', 'bearer ' + token)
+			.end((err, res) => {
+				res
+					.should
+					.have
+					.status(400)
+				done()
+			})
+	})
 
-  it('should delete a SINGLE user on /v1/users/<id> DELETE', done => {
-    chai
-      .request(app)
-      .delete('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + token)
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(200)
-        done()
-      })
-  })
+	it('should return error because alert was not found', done => {
+		chai
+		.request(app)
+		.delete('/v1/alerts/5cd03052bfee6a258c439d60')
+		.set('Authorization', 'bearer ' + token)
+		.end((err, res) => {
+			res
+				.should
+				.have
+				.status(404)
+			done()
+		})
+	})
 
-  it('should delete a UNKNOWN user on /v1/users/<id> DELETE', done => {
-    chai
-      .request(app)
-      .delete('/v1/users/45745c60-unknown-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + token)
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(404)
-        done()
-      })
-  })
-
-  it('should delete a NULL ID user on /v1/users/<id> DELETE', done => {
-    chai
-      .request(app)
-      .delete('/v1/users/')
-      .set('Authorization', 'bearer ' + token)
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(404)
-        done()
-      })
-  })
 })
+
 
 // A serie of test lauch with an INVALID or UNDEFINED access token
-describe('UNAUTHORIZED users tests', () => {
+/*describe('UNAUTHORIZED users tests', () => {
 
-  it('should try to get a JWT access token for an UNAUTHORIZED user (wrong password) on /v1/auth/login POST', done => {
-    chai
-      .request(app)
-      .post('/v1/auth/login/')
-      .send({
-        "login": "sid",
-        "password": "diabolo"
-      })
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should try to get a JWT access token for an UNAUTHORIZED user (no password) on /v1/auth/login POST', done => {
-    chai
-      .request(app)
-      .post('/v1/auth/login/')
-      .send({
-        "login": "sid",
-        "password": undefined
-      })
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should try to get a JWT access token for an UNAUTHORIZED user (wrong login) on /v1/auth/login POST', done => {
-    chai
-      .request(app)
-      .post('/v1/auth/login/')
-      .send({
-        "login": "sam",
-        "password": "punch"
-      })
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should test a request with an UNDEFINED JWT access token user on /v1/auth/verifyaccess GET', done => {
-    chai
-      .request(app)
-      .get('/v1/auth/verifyaccess/')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-    })
-  })
-
-  it('should test an INVALID JWT access token user on /v1/auth/verifyaccess GET', done => {
-    chai
-      .request(app)
-      .get('/v1/auth/verifyaccess/')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-    })
-  })
-
-  it('should test a request with an UNDEFINED JWT access token user on /v1/users GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should list ALL users on /v1/users GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should list a SINGLE user on /v1/users/<id> GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should list an UNKNOW user on /v1/users/<id> GET', done => {
-    chai
-      .request(app)
-      .get('/v1/users/45745c60-unknow-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should add a SINGLE user on /v1/users POST', done => {
-    chai
-      .request(app)
-      .post('/v1/users')
-      .set('Authorization', 'bearer ' + '...')
-      .send({name: 'Robert', login: 'roro', age: 23, password: 'dico'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should add a INVALID user on /v1/users POST', done => {
-    chai
-      .request(app)
-      .post('/v1/users')
-      .set('Authorization', 'bearer ' + '...')
-      .send({name: 'Robert', login: 'roro', age: 23, wrongparam: 'value'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should add an EMPTY user on /v1/users POST', done => {
-    chai
-      .request(app)
-      .post('/v1/users')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should update a SINGLE user on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .send({name: 'Robertinio'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should update a user with wrong parameters on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .send({wrongparam1: 'Robertinio'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should update a UNKNOW user on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-unknow-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .send({name: 'Robertinio'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should delete a SINGLE user on /v1/users/<id> DELETE', done => {
-    chai
-      .request(app)
-      .delete('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should delete a UNKNOWN user on /v1/users/<id> DELETE', done => {
-    chai
-      .request(app)
-      .delete('/v1/users/45745c60-unknown-2d42b21b1a3e')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-
-  it('should delete a NULL ID user on /v1/users/<id> DELETE', done => {
-    chai
-      .request(app)
-      .delete('/v1/users/')
-      .set('Authorization', 'bearer ' + '...')
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(401)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('code')
-          .equal(0)
-          
-        res
-          .body
-          .should
-          .have
-          .property('type')
-        res
-          .body
-          .should
-          .have
-          .property('message')
-        done()
-      })
-  })
-})
-
+})*/
