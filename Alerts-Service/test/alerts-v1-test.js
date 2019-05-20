@@ -301,22 +301,106 @@ describe('AUTHORIZED users tests', () => {
 
 	it('should return error because alert was not found', done => {
 		chai
-		.request(app)
-		.delete('/v1/alerts/5cd03052bfee6a258c439d60')
-		.set('Authorization', 'bearer ' + token)
-		.end((err, res) => {
-			res
-				.should
-				.have
-				.status(404)
-			done()
-		})
+			.request(app)
+			.delete('/v1/alerts/5cd03052bfee6a258c439d60')
+			.set('Authorization', 'bearer ' + token)
+			.end((err, res) => {
+				res
+					.should
+					.have
+					.status(404)
+				done()
+			})
 	})
 
 })
 
 
 // A serie of test lauch with an INVALID or UNDEFINED access token
-/*describe('UNAUTHORIZED users tests', () => {
+describe('UNAUTHORIZED users tests', () => {
 
-})*/
+	it('should not post an alert', done => {
+		chai
+			.request(app)
+			.post('/v1/alerts/')
+			.send({
+				"type": "weather",
+				"label": "My alert for",
+				"status": "warning",
+				"from": "string",
+				"to": "string"
+			})
+			.end((err, res) => {
+				res
+					.should
+					.have
+					.status(401)
+				res.should.be.json('object')
+				done()
+			})
+	})
+
+	it('should not get an array', done => {
+		chai
+			.request(app)
+			.get('/v1/alerts/search?status=danger,risk')
+			.end((err, res) => {
+				res
+					.should
+					.have
+					.status(401)
+				res.should.be.json('object')
+				done()
+			})
+	})
+
+	it('should not get the alert matching to the ID', done => {
+		chai
+			.request(app)
+			.get('/v1/alerts/' + alertID)
+			.end((err, res) => {
+				res
+					.should
+					.have
+					.status(401)
+				res.should.be.json('object')
+				done()
+			})
+	})
+
+	it('should not replace the alert matching to the ID', done => {
+		chai
+			.request(app)
+			.put('/v1/alerts/' + alertID)
+			.send({
+				"type": "weather",
+				"label": "My new alert for",
+				"status": "warning",
+				"from": "string",
+				"to": "string"
+			})
+			.end((err, res) => {
+				res
+					.should
+					.have
+					.status(401)
+				res.should.be.json('object')
+				done()
+			})
+	})
+
+	it('should not delete the alert', done => {
+		chai
+			.request(app)
+			.delete('/v1/alerts/' + alertID)
+			.end((err, res) => {
+				res
+					.should
+					.have
+					.status(401)
+				res.should.be.json('object')
+				done()
+			})
+	})
+
+})
