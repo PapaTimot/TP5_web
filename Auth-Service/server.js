@@ -1,8 +1,10 @@
+const config = require('config')
+
 const {app} = require('./app')
 
-const port = process.env.PORT || '3000'
+const {portAuth} = config.get('authConfig')
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-app.listen(port)
+app.listen(portAuth)

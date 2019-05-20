@@ -18,11 +18,8 @@ app.use(bodyParser.json())
 app.use(helmet({noSniff: true}))
 
 // connection à la bdd mongodb Atlas
-// if(process.env.NODE_ENV !== 'production'){
-// 	require('dotenv').config() // or mongodb://localhost/mybrary
-// }
-
 const { mongoDBAtlas, username, password, host, port, dbName } = config.get('dbConfig')
+const {portAuth, hostAuth} = config.get('authConfig')
 
 let db_url = ''
 if(mongoDBAtlas){
@@ -43,11 +40,12 @@ db.once('open', () => console.log('Connected to mongoose'))
 
 // Middleware d'authentification
 app.use((req, res, next) => {
+    const authUrl = `http://${hostAuth}:${portAuth}/v1/auth`
 	if(req.url.includes("/v1/auth/login")){
 		request.post({
 			"headers": { "content-type": "application/json" },
-            "url": "http://localhost:3000/v1/auth/login",
-			"body": JSON.stringify(req.body)
+            "url"    : `${authUrl}/login`,
+			"body"   : JSON.stringify(req.body)
 		}, (error, response, body) => {
 			if(error) {
                 res
@@ -79,7 +77,7 @@ app.use((req, res, next) => {
 		request.get({
             "headers": { "content-type" : "application/json",
                          "authorization": `bearer ${token}`},
-			"url": "http://localhost:3000/v1/auth/verifyaccess"
+			"url"    : `${authUrl}/verifyaccess`
 		}, (error, response) => {
 			if(error) {
                 res
@@ -112,7 +110,7 @@ app.use((req, res, next) => {
             request.get({
                 "headers": { "content-type" : "application/json",
                              "authorization": `bearer ${token}` },
-                "url": "http://localhost:3000/v1/auth/verifyaccess"
+                "url"    : `${authUrl}/verifyaccess`
             }, (error, response) => {
                 if(error) {
                     res

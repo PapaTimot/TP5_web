@@ -1,8 +1,10 @@
+const config = require('config')
+
 const {app} = require('./app')
 
-const port = process.env.PORT || '4000'
+const {portAlerts} = config.get('alertsConfig')
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-app.listen(port)
+app.listen(portAlerts)

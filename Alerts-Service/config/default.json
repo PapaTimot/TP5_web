@@ -1,10 +1,20 @@
 {
 	"dbConfig": {
-	"mongoDBAtlas": "true",
-	"username": "UserRW",
-	"password": "UserRW",
-	"host": "cluster-web-m6yhl.mongodb.net",
-	"port": "",
-	"dbName": "alerts"
+		"mongoDBAtlas" : "true",
+		"username"     : "UserRW",
+		"password"     : "UserRW",
+		"host"         : "cluster-web-m6yhl.mongodb.net",
+		"port"         : "",
+		"dbName"       : "alerts"
+	},
+
+	"authConfig": {
+		"hostAuth" : "localhost",
+		"portAuth" : 3000
+	},
+
+	"alertsConfig": {
+		"hostAlerts" : "localhost",
+		"portAlerts" : 4000
 	}
 }

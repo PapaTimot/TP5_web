@@ -1,0 +1,6 @@
+{
+	"authConfig": {
+		"hostAuth" : "localhost",
+		"portAuth" : 3000
+	}
+}
