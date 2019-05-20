@@ -14,4 +14,4 @@
  * Tp réalisé par Yoann Breton et Timothée Schneider-Maunoury
 
 ## Limites du TP
- * Nous n'avons pas encore implémenté la vérification des propriétés des alertes ...
+ * Nous n'avons pas encore implémenté la vérification des propriétés des alertes, ce qui explique en partie pourquoi certains tests ne passent pas pour le service d'alertes.
