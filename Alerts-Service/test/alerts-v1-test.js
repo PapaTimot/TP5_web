@@ -87,7 +87,7 @@ describe('AUTHORIZED users tests', () => {
 				res
 					.should
 					.have
-					.status(200)
+					.status(201)
 				res.should.be.json
 				res
 					.body
