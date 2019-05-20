@@ -78,7 +78,7 @@ router.post('/', async function (req, res, next) {
     try {
       const alert = await alertsModel.add(newAlert)
       res
-      .status(201)
+      .status(200)
       .send(alert)
     } catch (error) {
       res
