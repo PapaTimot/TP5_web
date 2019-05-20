@@ -1,0 +1,10 @@
+{
+	"dbConfig": {
+	"mongoDBAtlas": "true",
+	"username": "db_user",
+	"password": "db_password",
+	"host": "db_host",
+	"port": "db_port",
+	"dbName": "db_name"
+	}
+}
