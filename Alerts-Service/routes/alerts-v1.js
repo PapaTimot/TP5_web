@@ -15,7 +15,7 @@ router.use((req, res, next) => {
 })
 
 /* GET alerts filtered by their status
-curl http://localhost:3000/v1/alerts/search?status=danger,risk */
+curl http://localhost:4000/v1/alerts/search?status=danger,risk */
 router.get('/search', async function (req, res, next) {
   let statusFilter = undefined
   try {
@@ -46,7 +46,7 @@ router.get('/search', async function (req, res, next) {
 })
 
 /* GET a specific alert by id
-curl http://localhost:3000/v1/alerts/5cd03052bfee6a258c439d60 */
+curl http://localhost:4000/v1/alerts/5cd03052bfee6a258c439d60 */
 router.get('/:id', async function (req, res, next) {
   const id = req.params.id
 
@@ -69,7 +69,7 @@ router.get('/:id', async function (req, res, next) {
 })
 
 /* Add a new alert 
-curl -X POST -H "Content-Type: application/json"  http://localhost:3000/v1/alerts -d '{"type":"transport","label":"My alert for","status":"risk","from":"string","to":"string"}'*/
+curl -X POST -H "Content-Type: application/json"  http://localhost:4000/v1/alerts -d '{"type":"transport","label":"My alert for","status":"risk","from":"string","to":"string"}'*/
 router.post('/', async function (req, res, next) {
   const newAlert = req.body
 
@@ -93,7 +93,7 @@ router.post('/', async function (req, res, next) {
 })
 
 /* Update a specific alert 
-curl -X PATCH -H "Content-Type: application/json"  http://localhost:3000/v1/alerts/5cd03052bfee6a258c439d60 -d '{"status":"danger"}'*/
+curl -X PATCH -H "Content-Type: application/json"  http://localhost:4000/v1/alerts/5cd03052bfee6a258c439d60 -d '{"status":"danger"}'*/
 router.patch('/:id', async function (req, res, next) {
   const id = req.params.id
   const newAlertProperties = req.body
@@ -125,7 +125,7 @@ router.patch('/:id', async function (req, res, next) {
 })
 
 /* REMOVE a specific alert by id 
-curl -X DELETE http://localhost:3000/v1/alerts/5cd03052bfee6a258c439d60 */
+curl -X DELETE http://localhost:4000/v1/alerts/5cd03052bfee6a258c439d60 */
 router.delete('/:id', async function (req, res, next) {
   const id = req.params.id
 

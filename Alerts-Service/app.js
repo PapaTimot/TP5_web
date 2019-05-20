@@ -35,52 +35,69 @@ app.use((req, res, next) => {
 	if(req.url.includes("/v1/auth/login")){
 		request.post({
 			"headers": { "content-type": "application/json" },
-			"url": "http://localhost:3000/v1/auth/login",
-			"body": req.body
+            "url": "http://localhost:3000/v1/auth/login",
+			"body": JSON.stringify(req.body)
 		}, (error, response, body) => {
 			if(error) {
-				return console.log(error);
-			}
-			console.log(JSON.parse(body));
-		});
+                res
+                .status(500)
+                .json({ code    : 0,
+                        type    : "server",
+                        message : ("access to auth service broken : " + error)})
+            }
+            else {
+                res
+                .status(response.statusCode)
+                .send(response.body)
+            }
+        });
 	}
 	else if (req.url.includes("/v1/auth/verifyaccess")){
 		request.post({
 			"headers": { "content-type": "application/json" },
 			"url": "http://localhost:3000/v1/auth/verifyaccess",
-			"body": req.body
+			"body": JSON.stringify(req.body)
 		}, (error, response, body) => {
 			if(error) {
-				return console.log(error);
-			}
-			console.log(JSON.parse(body));
-		});
+                res
+                .status(500)
+                .json({ code    : 0,
+                        type    : "server",
+                        message : ("access to auth service broken : " + error)})
+            }
+            else {
+                res
+                .status(response.statusCode)
+                .send(response.body)
+            }
+        });
 	}
     else{
-        let token = null
-        try {
-            token = req.headers.authorization.split(" ")[1]
-        } 
-        catch (error) {
-            res
-            .status(401)
-            .json({ code    : 0,
-                type    : "authorization",
-                message : "no access token"})
-        }
-        if (token){
-            idpModel(usersModel).checkJWT(token)
-            .then(() => {
-                next()
-            })
-            .catch(() => {
-                res
-                .status(401)
-                .json({ code    : 0,
-                    type    : "authorization",
-                    message : "unvalid access token"})
-            })
-        }
+        next()
+        // let token = null
+        // try {
+        //     token = req.headers.authorization.split(" ")[1]
+        // } 
+        // catch (error) {
+        //     res
+        //     .status(401)
+        //     .json({ code    : 0,
+        //         type    : "authorization",
+        //         message : "no access token"})
+        // }
+        // if (token){
+        //     idpModel(usersModel).checkJWT(token)
+        //     .then(() => {
+        //         next()
+        //     })
+        //     .catch(() => {
+        //         res
+        //         .status(401)
+        //         .json({ code    : 0,
+        //             type    : "authorization",
+        //             message : "unvalid access token"})
+        //     })
+        // }
     }
 })
 
