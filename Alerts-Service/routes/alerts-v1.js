@@ -79,6 +79,7 @@ router.post('/', async function (req, res, next) {
       const alert = await alertsModel.add(newAlert)
       res
       .status(201)
+      .header('Content-Type', 'application/json')
       .send(alert)
     } catch (error) {
       res

@@ -83,13 +83,11 @@ describe('AUTHORIZED users tests', () => {
 				"to": "string"
 			})
 			.end((err, res) => {
-				alertID = res.body._id
-				assert(alertID !== '', 'alertID = ' + alertID)
-				
+				alertID = res.body._id				
 				res
 					.should
 					.have
-					.status(200)
+					.status(201)
 				res.should.be.json
 				res
 					.body
