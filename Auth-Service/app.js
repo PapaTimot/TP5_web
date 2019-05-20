@@ -45,8 +45,6 @@ app.use((req, res, next) => {
     else {
         next()
     }
-
-
 })
 
 // On injecte les modèles dans les routers
