@@ -17,9 +17,10 @@ app.use(bodyParser.json())
 // Activation de Helmet
 app.use(helmet({noSniff: true}))
 
+const {portAuth, hostAuth} = config.get('authConfig')
+
 // connection à la bdd mongodb Atlas
 const { mongoDBAtlas, username, password, host, port, dbName } = config.get('dbConfig')
-const {portAuth, hostAuth} = config.get('authConfig')
 
 let db_url = ''
 if(mongoDBAtlas){
@@ -57,6 +58,7 @@ app.use((req, res, next) => {
             else {
                 res
                 .status(response.statusCode)
+                .header('Content-Type', 'application/json')
                 .send(response.body)
             }
         });
@@ -89,6 +91,7 @@ app.use((req, res, next) => {
             else {
                 res
                 .status(response.statusCode)
+                .header('Content-Type', 'application/json')
                 .send(response.body)
             }
         });

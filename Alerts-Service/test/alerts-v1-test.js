@@ -6,22 +6,69 @@ chai.should()
 chai.use(chaiHttp)
 
 token = ''
-
-chai
-	.request(app)
-	.post('/v1/auth/login/')
-	.send({
-		"login": "pedro",
-		"password": "tequila"
-	})
-	.end((err, res) => {
-		token = res.body.access_token
-	})
-
 alertID = ''
 
 // A serie of test lauch with a VALID access token
 describe('AUTHORIZED users tests', () => {
+
+	it('should try to get a JWT access token for an AUTHORIZED user on /v1/auth/login POST', done => {
+    chai
+      .request(app)
+      .post('/v1/auth/login/')
+      .send({
+        "login": "pedro",
+        "password": "tequila"
+      })
+      .end((err, res) => {
+				token = res.body.access_token				
+        res
+          .should
+          .have
+          .status(200)
+        res.should.be.json
+        res
+          .body
+          .should
+          .be
+          .a('object')
+        res
+          .body
+          .should
+          .have
+          .property('access_token')
+        res
+          .body
+          .should
+          .have
+          .property('expirity')
+        done()
+      })
+  })
+
+  it('should test a VALID JWT access token user on /v1/auth/verifyaccess GET', done => {
+    chai
+      .request(app)
+      .get('/v1/auth/verifyaccess/')
+      .set('Authorization', 'bearer ' + token)
+      .end((err, res) => {
+        res
+          .should
+          .have
+          .status(200)
+        res.should.be.json
+        res
+          .body
+          .should
+          .be
+          .a('object')
+        res
+          .body
+          .should
+          .have
+          .property('message')
+        done()
+      })
+  })
 
 	it('should create a new alert', done => {
 		chai
