@@ -335,7 +335,12 @@ describe('UNAUTHORIZED users tests', () => {
 					.should
 					.have
 					.status(401)
-				res.should.be.json('object')
+				res.should.be.json
+				res
+					.body
+					.should
+					.be
+					.a('object')
 				done()
 			})
 	})
@@ -349,7 +354,12 @@ describe('UNAUTHORIZED users tests', () => {
 					.should
 					.have
 					.status(401)
-				res.should.be.json('object')
+				res.should.be.json
+				res
+					.body
+					.should
+					.be
+					.a('object')
 				done()
 			})
 	})
@@ -363,7 +373,12 @@ describe('UNAUTHORIZED users tests', () => {
 					.should
 					.have
 					.status(401)
-				res.should.be.json('object')
+				res.should.be.json
+				res
+					.body
+					.should
+					.be
+					.a('object')
 				done()
 			})
 	})
@@ -384,7 +399,12 @@ describe('UNAUTHORIZED users tests', () => {
 					.should
 					.have
 					.status(401)
-				res.should.be.json('object')
+				res.should.be.json
+				res
+					.body
+					.should
+					.be
+					.a('object')
 				done()
 			})
 	})
@@ -398,7 +418,12 @@ describe('UNAUTHORIZED users tests', () => {
 					.should
 					.have
 					.status(401)
-				res.should.be.json('object')
+				res.should.be.json
+				res
+					.body
+					.should
+					.be
+					.a('object')
 				done()
 			})
 	})
