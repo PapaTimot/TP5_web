@@ -64,11 +64,23 @@ app.use((req, res, next) => {
         });
 	}
 	else if (req.url.includes("/v1/auth/verifyaccess")){
-		request.post({
-			"headers": { "content-type": "application/json" },
-			"url": "http://localhost:3000/v1/auth/verifyaccess",
-			"body": JSON.stringify(req.body)
-		}, (error, response, body) => {
+        let token = null
+        try {
+            token = req.headers.authorization.split(" ")[1]
+        } 
+        catch (error) {
+            res
+            .status(401)
+            .json({ code    : 0,
+                type    : "authorization",
+                message : "no access token"})
+            return
+        }
+		request.get({
+            "headers": { "content-type" : "application/json",
+                         "authorization": `bearer ${token}`},
+			"url": "http://localhost:3000/v1/auth/verifyaccess"
+		}, (error, response) => {
 			if(error) {
                 res
                 .status(500)
@@ -84,31 +96,41 @@ app.use((req, res, next) => {
         });
 	}
     else{
-        next()
-        // let token = null
-        // try {
-        //     token = req.headers.authorization.split(" ")[1]
-        // } 
-        // catch (error) {
-        //     res
-        //     .status(401)
-        //     .json({ code    : 0,
-        //         type    : "authorization",
-        //         message : "no access token"})
-        // }
-        // if (token){
-        //     idpModel(usersModel).checkJWT(token)
-        //     .then(() => {
-        //         next()
-        //     })
-        //     .catch(() => {
-        //         res
-        //         .status(401)
-        //         .json({ code    : 0,
-        //             type    : "authorization",
-        //             message : "unvalid access token"})
-        //     })
-        // }
+        let token = null
+        try {
+            token = req.headers.authorization.split(" ")[1]
+        } 
+        catch (error) {
+            res
+            .status(401)
+            .json({ code    : 0,
+                type    : "authorization",
+                message : "no access token"})
+            return
+        }
+        if (token){
+            request.get({
+                "headers": { "content-type" : "application/json",
+                             "authorization": `bearer ${token}` },
+                "url": "http://localhost:3000/v1/auth/verifyaccess"
+            }, (error, response) => {
+                if(error) {
+                    res
+                    .status(500)
+                    .json({ code    : 0,
+                            type    : "server",
+                            message : ("access to auth service broken : " + error)})
+                }
+                else if(response.statusCode !== 200) {
+                    res
+                    .status(response.statusCode)
+                    .send(response.body) 
+                }
+                else{
+                    next()
+                }
+            });
+        }
     }
 })
 
