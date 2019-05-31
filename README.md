@@ -9,7 +9,7 @@
  * Le service d'alerte peut également être lancé avec `npm start` dans le répertoire 'Alerts-Service', mais il est nécessaire pour son fonctionnement d'avoir préalablement lancé le service d'authentification.
  * Pour exécuter les tests, utiliser la commande `npm test` dans chacun des deux répertoires de projet.
 
-## Autheurs :
+## Auteurs :
  * Reprise d'un squelette de code et de consignes de Stéphane Michel et  Benoit Chanclou.
  * Tp réalisé par Yoann Breton et Timothée Schneider-Maunoury.
 
